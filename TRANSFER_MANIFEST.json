@@ -1,0 +1,198 @@
+{
+  "project": "RepairCenter",
+  "snapshot_date": "2026-09-08",
+  "entrypoint": "PROJECT_CONTEXT.md",
+  "source_thread_id": "01a0669f-d81e-7843-ac97-0e93f35f3827",
+  "git": {
+    "branch": "master",
+    "commits": 0,
+    "remotes": []
+  },
+  "files": [
+    {
+      "path": "analysis/implementation-proposal.md",
+      "bytes": 42224,
+      "sha256": "e12f3b2e85d57cbae39dd046eb420c41b0ed6639f9ebdd33d662f002b19f519b"
+    },
+    {
+      "path": "analysis/pdf-pages.json",
+      "bytes": 2510,
+      "sha256": "09e5be50b179742783da6b29b8e2162226902eaddf6013cec02ea57f6fc1554f"
+    },
+    {
+      "path": "analysis/requirements-source.md",
+      "bytes": 138746,
+      "sha256": "9e5d1435cc21e69d1e4378b527fb7eebc72fe6278fb1c4958faa3c50af8c20f8"
+    },
+    {
+      "path": "CHAT_HISTORY.md",
+      "bytes": 39442,
+      "sha256": "81dd46cd137eee7723f8cc9e6b3eeb7260cbc10cbd32833f69b3bed808e3333f"
+    },
+    {
+      "path": "design/concepts/01-blue-graphite.png",
+      "bytes": 1303069,
+      "sha256": "e774c54cd3afca369016969406fc37445ca1bf092aefa5c46de11317897ee877"
+    },
+    {
+      "path": "design/concepts/02-teal-light.png",
+      "bytes": 1193956,
+      "sha256": "6c20d4e9353b0bc3c05a787d4d7d088ce091a71a53774746ae4b3ed8807c562e"
+    },
+    {
+      "path": "design/concepts/03-graphite-gold.png",
+      "bytes": 1536025,
+      "sha256": "15483855b923f2aa804b88db5c5f2e1c6bc062a356d70f69f510cd9d171108d0"
+    },
+    {
+      "path": "design/concepts/design-notes.md",
+      "bytes": 4730,
+      "sha256": "268f15d77ae130e9ae17d7f3630aa0372d46cd740f23085ec0de3c30a5e80f36"
+    },
+    {
+      "path": "design/concepts/generation-prompts.md",
+      "bytes": 24126,
+      "sha256": "38b2d9f6b27a78313d33c7091a2f05ab95a681d233c12f73780fb18a43a1be0b"
+    },
+    {
+      "path": "design/logo/01-cycle-source.png",
+      "bytes": 1313635,
+      "sha256": "8af98218847fd792795aef73bccb52d5fb737241aad3f7c818b75eff6237f765"
+    },
+    {
+      "path": "design/logo/02-monogram-source.png",
+      "bytes": 1186888,
+      "sha256": "abc9db247f3ed041693c586002428771bee9530122dd72f78984bfe8c0439ea0"
+    },
+    {
+      "path": "design/logo/03-link-source.png",
+      "bytes": 1201939,
+      "sha256": "6fc1a8aeb6d97dfa7266b340d324cc0798c79fecea4ed8f4ceb5537418125d0b"
+    },
+    {
+      "path": "design/logo/build-brand.ps1",
+      "bytes": 5412,
+      "sha256": "4b0ae304c01d33358378cee38f5b64736117e9583a9093bb2b55f3312c9b3739"
+    },
+    {
+      "path": "design/logo/generation-prompts.md",
+      "bytes": 15240,
+      "sha256": "c39db98e88b342b85d01d8d142cadda1ab9ba7e22aa6ed5c650a68cb82f07050"
+    },
+    {
+      "path": "design/logo/logo-concepts.png",
+      "bytes": 1231172,
+      "sha256": "d5865c48cd2c7b9c484de5a3c856e3bd23e19468a9e64e7fb84eab9325e8a6e6"
+    },
+    {
+      "path": "design/logo/README.md",
+      "bytes": 3266,
+      "sha256": "9f20b39acf4382959c3f6953968a1a612705d1c2ffd102f8b3c3374bb16735b0"
+    },
+    {
+      "path": "design/logo/render-brand.cjs",
+      "bytes": 1586,
+      "sha256": "463ff1718af78489ae70eb7e4b892ce842f97f529c8f0c16271cad976a38080b"
+    },
+    {
+      "path": "PROJECT_CONTEXT.md",
+      "bytes": 128278,
+      "sha256": "dcc460f9c6aa392698b1aa9116a3d74b74d8ab0d6fe7023b40a9b7648a2c5875"
+    },
+    {
+      "path": "source-documents/maintenance-requirements-original.pdf",
+      "bytes": 849764,
+      "sha256": "155c003345f719529c8e7861b4561d4069b45222982230c20f6f28779f51e858"
+    },
+    {
+      "path": "static/branding/apple-touch-icon.png",
+      "bytes": 3361,
+      "sha256": "8a725fdb128900d699fa7c4b16012a83403bc70a1fddc16b08e233b146df192d"
+    },
+    {
+      "path": "static/branding/brand-preview.png",
+      "bytes": 55577,
+      "sha256": "210998a4107f41c9580ca0a06f4084eaa4ea44724fbc83c5ccfb7f79533caa80"
+    },
+    {
+      "path": "static/branding/brand-preview.svg",
+      "bytes": 12578,
+      "sha256": "71c6b6df246c569d6cc6f4908a28a2587b221fac32f31d8542298d685e7844e1"
+    },
+    {
+      "path": "static/branding/brand.css",
+      "bytes": 321,
+      "sha256": "ed24a61c7b5c6550791eedf557a724de4baac8dfef4177139f7dd9ee8edf2053"
+    },
+    {
+      "path": "static/branding/favicon.ico",
+      "bytes": 2121,
+      "sha256": "8996c2a1cf908e5cc6925098d4819a90217fac681f410f1049bee13f7d263d75"
+    },
+    {
+      "path": "static/branding/favicon.svg",
+      "bytes": 512,
+      "sha256": "1e043e92c57a26c3a77a9524a9f81b41b308c4869c8bdda17bcda6363a513142"
+    },
+    {
+      "path": "static/branding/icon-16.png",
+      "bytes": 447,
+      "sha256": "e3457e023e0e460ff2811a92eeaf50cfad5063857b91fc0aa86176a3b632534c"
+    },
+    {
+      "path": "static/branding/icon-192.png",
+      "bytes": 3625,
+      "sha256": "8de7174ac48093dd36ba749482044556865df3d4ac12a12bff123c6459fb6c88"
+    },
+    {
+      "path": "static/branding/icon-24.png",
+      "bytes": 565,
+      "sha256": "23f5f61c1ac268e25044c24110cd2bd2054cce8226fc22701316d630770a0fc7"
+    },
+    {
+      "path": "static/branding/icon-32.png",
+      "bytes": 683,
+      "sha256": "413d7b9fef9d9220603361a5a01442f0169405db390a93e06534dc6f2fcc9ef2"
+    },
+    {
+      "path": "static/branding/icon-48.png",
+      "bytes": 937,
+      "sha256": "4cc2070ceaf2dafcfe269639d4684715ea7920b1e6897433eb9738950040577f"
+    },
+    {
+      "path": "static/branding/icon-512.png",
+      "bytes": 13406,
+      "sha256": "92cdab07e2503c85189e1580e49f1f1c8a161fde6295ae4acd38e87569fed84f"
+    },
+    {
+      "path": "static/branding/logo-dark.svg",
+      "bytes": 4098,
+      "sha256": "38d38d632447651607ac3c0c4eaf9664da5b7998e9ca60e606a652ce982a3a0a"
+    },
+    {
+      "path": "static/branding/logo-light.svg",
+      "bytes": 4098,
+      "sha256": "4db01363be28bb41679aba5c8061e427fe5af5dff4fe9cc1a9293844adca9936"
+    },
+    {
+      "path": "static/branding/mark-dark.svg",
+      "bytes": 515,
+      "sha256": "7746e2ee50348e610bc4ebb60ad4153125547dbce34befc8b4b5c85342b0d185"
+    },
+    {
+      "path": "static/branding/mark-light.svg",
+      "bytes": 503,
+      "sha256": "64d9f488a6a8c94ba89ccd5ff55e1c6c5025d0a5e215e6e3c794885533644a28"
+    },
+    {
+      "path": "static/branding/mark-monochrome.svg",
+      "bytes": 483,
+      "sha256": "0f5a2c7828a980581f95f7c4e9e39fab3f5cffc1c044dbd4a475af1cb4df5a59"
+    },
+    {
+      "path": "static/branding/README.md",
+      "bytes": 5023,
+      "sha256": "6ed69255276b19df8b9d592d053c613637cd2d4c50464cac898d57723d7fe5bf"
+    }
+  ]
+}

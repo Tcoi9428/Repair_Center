@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Справочники НСИ{% endblock %}
+{% block content %}
+<div class="eyebrow">НОРМАТИВНО-СПРАВОЧНАЯ ИНФОРМАЦИЯ</div>
+<div class="page-heading"><div><h1>Справочники</h1><p class="muted">Единые данные для учета техники и организации обслуживания.</p></div></div>
+<section class="catalog-grid" aria-label="Справочники">
+{% for item, count in cards %}<a class="catalog-card" href="{% url 'directories:list' item.slug %}">
+<div class="card-top"><span class="card-number">0{{ forloop.counter }}</span><span class="count-label">Записей: {{ count }}</span></div>
+<h2>{{ item.title }}</h2><p>{{ item.description }}</p><span class="card-link">Открыть справочник <span aria-hidden="true">→</span></span>
+</a>{% endfor %}
+</section>
+<div class="info-strip"><strong>Порядок заполнения</strong><span>Сначала создайте тип техники, затем добавьте связанные с ним модели.</span></div>
+{% endblock %}

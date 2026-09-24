@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Вход{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block anonymous_content %}
+<div class="auth-shell">
+  <section class="auth-visual" aria-label="О системе Ремонтный Центр">
+    <div class="auth-visual-shade"></div>
+    <div class="auth-visual-content">
+      <div class="auth-chip"><span aria-hidden="true">⌁</span> ЦИФРОВОЕ УПРАВЛЕНИЕ РЕМОНТАМИ</div>
+      <div class="auth-visual-copy">
+        <div class="auth-eyebrow">ЕДИНОЕ РАБОЧЕЕ ПРОСТРАНСТВО</div>
+        <h1>Ремонты под контролем.<br>Данные — <span>в порядке.</span></h1>
+        <p>Справочники, роли и история изменений в единой системе сервисной службы.</p>
+      </div>
+      <div class="auth-benefits" aria-label="Возможности">
+        <div class="auth-benefit"><span class="auth-benefit-icon" aria-hidden="true">01</span><div><strong>Единая нормативная база</strong><small>Предприятия, типы, модели и статусы техники.</small></div></div>
+        <div class="auth-benefit"><span class="auth-benefit-icon" aria-hidden="true">02</span><div><strong>Доступ по рабочим ролям</strong><small>Каждый специалист видит нужные экраны и действия.</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="auth-card" aria-labelledby="login-title">
+    <div class="auth-card-head">
+      <div><div class="auth-eyebrow">ЗАЩИЩЕННЫЙ ДОСТУП</div><h1 id="login-title">Войти в систему</h1></div>
+      <span class="auth-mark"><img src="{% static 'branding/mark-light.svg' %}" alt=""></span>
+    </div>
+    <p class="auth-subtitle">Используйте рабочую учетную запись.</p>
+    {% if form.errors %}<div class="error-summary auth-error" role="alert">Не удалось войти. Проверьте логин и пароль.</div>{% endif %}
+    <form method="post" class="auth-form" data-login-form>{% csrf_token %}
+      <label for="id_username">Логин</label>
+      <input id="id_username" name="username" autocomplete="username" required autofocus placeholder="Введите логин" value="{{ form.username.value|default:'' }}">
+      <label for="id_password">Пароль</label>
+      <div class="password-control">
+        <input id="id_password" type="password" name="password" autocomplete="current-password" required placeholder="Введите пароль">
+        <button type="button" class="password-toggle" data-password-toggle aria-label="Показать пароль" aria-pressed="false">Показать</button>
+      </div>
+      <a class="auth-help-link" href="#login-help">Не удается войти?</a>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="button primary auth-submit" type="submit">Войти <span aria-hidden="true">→</span></button>
+    </form>
+    <p class="auth-admin-note">Доступ выдает администратор системы.</p>
+    <div class="auth-security" id="login-help"><strong>Официальный вход в Ремонтный Центр</strong><p>Используйте только рабочую учетную запись этой системы. Для получения доступа или восстановления пароля обратитесь к администратору.</p></div>
+    <a class="auth-back" href="{% url 'public_home' %}">← На публичную страницу системы</a>
+  </section>
+</div>
+{% endblock %}

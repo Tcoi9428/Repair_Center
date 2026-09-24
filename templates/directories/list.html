@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% load directory_tags %}
+{% block title %}{{ catalog.title }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'directories:home' %}">Справочники</a><span>/</span>{{ catalog.title }}</div>
+<div class="page-heading"><div><h1>{{ catalog.title }} <span class="title-count">{{ total_count }}</span></h1><p class="muted">{{ catalog.description }}</p></div>
+{% if can_add %}<a class="button primary" href="{% url 'directories:create' catalog.slug %}"><span aria-hidden="true">＋</span> Создать {{ catalog.singular }}</a>{% endif %}</div>
+<section class="registry">
+<form class="toolbar" method="get" role="search">
+<div class="search-control"><label class="visually-hidden" for="q">Поиск по справочнику</label><input type="search" id="q" name="q" value="{{ query }}" placeholder="Поиск по коду или наименованию" maxlength="200"></div>
+{% if catalog.slug == 'equipment-models' %}<label class="visually-hidden" for="type">Тип техники</label><select id="type" name="type"><option value="">Все типы техники</option>{% for type in equipment_types %}<option value="{{ type.pk }}" {% if selected_type == type.pk|stringformat:'s' %}selected{% endif %}>{{ type.short_name }}</option>{% endfor %}</select>{% endif %}
+{% if catalog.slug == 'equipment' %}<label class="visually-hidden" for="type">Тип техники</label><select id="type" name="type"><option value="">Все типы техники</option>{% for type in equipment_types %}<option value="{{ type.pk }}" {% if selected_type == type.pk|stringformat:'s' %}selected{% endif %}>{{ type.short_name }}</option>{% endfor %}</select><label class="visually-hidden" for="status">Статус техники</label><select id="status" name="status"><option value="">Все статусы</option>{% for item in equipment_statuses %}<option value="{{ item.pk }}" {% if selected_status == item.pk|stringformat:'s' %}selected{% endif %}>{{ item.name }}</option>{% endfor %}</select>{% endif %}
+{% if catalog.slug == 'equipment-statuses' %}<label class="visually-hidden" for="state">Активность</label><select id="state" name="state"><option value="">Любая активность</option><option value="active" {% if state == 'active' %}selected{% endif %}>Активен</option><option value="inactive" {% if state == 'inactive' %}selected{% endif %}>Неактивен</option></select>{% endif %}
+{% if catalog.slug == 'companies' %}<label class="visually-hidden" for="state">Сервисный договор</label><select id="state" name="state"><option value="">Все предприятия</option><option value="yes" {% if state == 'yes' %}selected{% endif %}>Есть сервисный договор</option><option value="no" {% if state == 'no' %}selected{% endif %}>Без сервисного договора</option></select>{% endif %}
+<button class="button secondary" type="submit">Найти</button>{% if query or state or selected_type %}<a class="text-link" href="{% url 'directories:list' catalog.slug %}">Сбросить</a>{% endif %}
+</form>
+<div class="table-scroll"><table><caption class="visually-hidden">{{ catalog.title }}</caption><thead><tr>{% for column in catalog.columns %}<th scope="col">{{ catalog.model|field_label:column }}</th>{% endfor %}<th scope="col"><span class="visually-hidden">Действия</span></th></tr></thead>
+<tbody>{% for item in page_obj %}<tr class="clickable-row" data-row-href="{% url 'directories:detail' catalog.slug item.pk %}" tabindex="0" aria-label="Открыть карточку: {{ item }}">{% for column in catalog.columns %}<td {% if column == 'id' or column == 'code' %}class="code-cell"{% endif %}>
+{% if column == 'name' or column == 'company_name_full' or column == 'equipment_identifier' %}<a class="record-link" href="{% url 'directories:detail' catalog.slug item.pk %}">{{ item|field_value:column }}</a>
+{% elif column == 'service_contract' or column == 'is_active' %}<span class="badge {% if item|field_value:column == 'Да' or item|field_value:column == 'Активен' %}positive{% else %}neutral{% endif %}">{{ item|field_value:column }}</span>
+{% else %}{{ item|field_value:column }}{% endif %}</td>{% endfor %}<td class="actions-cell"><a href="{% url 'directories:detail' catalog.slug item.pk %}">Карточка →</a></td></tr>
+{% empty %}<tr><td colspan="8"><div class="empty-state"><h2>{% if query or state or selected_type %}Ничего не найдено{% else %}Пока нет записей{% endif %}</h2><p>{% if query or state or selected_type %}Измените поисковый запрос или сбросьте фильтры.{% else %}Создайте первую запись этого справочника.{% endif %}</p></div></td></tr>{% endfor %}</tbody></table></div>
+<footer class="table-footer"><span>Найдено: {{ page_obj.paginator.count }}</span><nav aria-label="Страницы" class="pagination">{% if page_obj.has_previous %}<a href="?{{ page_query }}&page={{ page_obj.previous_page_number }}">← Назад</a>{% endif %}<span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a href="?{{ page_query }}&page={{ page_obj.next_page_number }}">Далее →</a>{% endif %}</nav></footer>
+</section>
+{% endblock %}

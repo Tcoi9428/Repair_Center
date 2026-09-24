@@ -1,0 +1,33 @@
+{% extends 'base.html' %}{% load directory_tags %}
+{% block title %}{% if record %}Редактирование оборудования{% else %}Создание оборудования{% endif %}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'directories:home' %}">Справочники</a><span>/</span><a href="{% url 'directories:list' catalog.slug %}">Оборудование</a><span>/</span>{% if record %}Редактирование{% else %}Создание{% endif %}</div>
+<div class="page-heading"><div><h1>{% if record %}Редактирование оборудования{% else %}Создать оборудование{% endif %}</h1><p class="muted">{% if record %}{{ record.equipment_identifier }}{% else %}Идентификатор будет сформирован автоматически после заполнения основных данных.{% endif %}</p></div></div>
+<form method="post" enctype="multipart/form-data" class="record-form equipment-form" data-record-form data-equipment-form novalidate>{% csrf_token %}
+  {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+  {% if form.errors or formset.errors %}<div class="error-summary" role="alert"><strong>Не удалось сохранить оборудование.</strong><div>Проверьте выделенные поля и прикрепленные документы.</div>{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+  <div class="equipment-tabs" data-tab-group>
+    <div class="tab-list" role="tablist" aria-label="Разделы оборудования">
+      {% for tab_id, tab_title, fields in equipment_tabs %}<button type="button" class="tab-button {% if forloop.first %}is-active{% endif %}" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" data-tab-target="{{ tab_id }}">{{ tab_title }}</button>{% endfor %}
+    </div>
+    {% for tab_id, tab_title, fields in equipment_tabs %}
+    <section class="tab-panel" role="tabpanel" data-tab-panel="{{ tab_id }}" {% if not forloop.first %}hidden{% endif %}>
+      <div class="panel-heading"><h2>{{ tab_title }}</h2><span class="muted small">{% if forloop.first %}* Обязательные поля{% endif %}</span></div>
+      {% if tab_id == 'warranty' %}<p class="system-note">Статус и дата окончания гарантии рассчитываются автоматически от даты ввода, срока гарантии и продления.</p>{% endif %}
+      <div class="form-grid">
+      {% for name in fields %}{% with field=form|form_field:name %}<div class="field {% if field.errors %}field-invalid{% endif %} {% if name == 'equipment_image' or name == 'machine_kit_supply_contract' or name == 'operation_manual' %}field-wide{% endif %}">
+        {% if field.field.widget.input_type == 'checkbox' %}<label class="checkbox-label" for="{{ field.id_for_label }}">{{ field }} {{ field.label }}</label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required"> *</span>{% endif %}</label>{{ field }}{% endif %}
+        {% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}{% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>{% endwith %}{% endfor %}
+      </div>
+      {% if tab_id == 'documents' %}
+      <div class="other-documents"><h3>Прочие документы</h3><p class="muted small">Можно прикрепить несколько файлов и задать каждому понятное название.</p>{{ formset.management_form }}
+        {% for document_form in formset %}<div class="document-form-row">{% for hidden in document_form.hidden_fields %}{{ hidden }}{% endfor %}<div class="field"><label for="{{ document_form.title.id_for_label }}">Название документа</label>{{ document_form.title }}{% for error in document_form.title.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div><div class="field"><label for="{{ document_form.file.id_for_label }}">Файл</label>{{ document_form.file }}{% for error in document_form.file.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>{% if document_form.instance.pk %}<label class="document-delete">{{ document_form.DELETE }} Удалить документ</label>{% endif %}{% for error in document_form.non_field_errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>{% endfor %}
+      </div>
+      {% endif %}
+    </section>
+    {% endfor %}
+  </div>
+  <div class="form-actions"><button class="button primary" type="submit">{% if record %}Сохранить изменения{% else %}Создать оборудование{% endif %}</button><a class="button secondary" href="{% if record %}{% url 'directories:detail' catalog.slug record.pk %}{% else %}{% url 'directories:list' catalog.slug %}{% endif %}">Отмена</a></div>
+</form>
+{% endblock %}

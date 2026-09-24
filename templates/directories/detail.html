@@ -1,0 +1,14 @@
+{% extends 'base.html' %}{% load directory_tags %}
+{% block title %}{{ record }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'directories:home' %}">Справочники</a><span>/</span><a href="{% url 'directories:list' catalog.slug %}">{{ catalog.title }}</a><span>/</span>Карточка</div>
+{% if is_visual_card %}
+<section class="record-hero {% if visual_kind == 'company' %}record-hero-company{% elif visual_kind == 'pdm' %}record-hero-pdm{% else %}record-hero-generic{% endif %}">
+  <div class="record-hero-content"><div class="record-kind">{% if catalog.slug == 'companies' %}ПРЕДПРИЯТИЕ ЭКСПЛУАТАЦИИ{% elif catalog.slug == 'equipment-types' %}ТИП ТЕХНИКИ{% else %}МОДЕЛЬ ТЕХНИКИ{% endif %}</div><h1 class="record-title">{% if record.company_name_full %}{{ record.company_name_full }}{% else %}{{ record.name }}{% endif %}</h1><p>{{ catalog.title }} · Код: {{ record.code|default:record.pk }}</p></div>
+  {% if can_change %}<a class="button record-edit" href="{% url 'directories:edit' catalog.slug record.pk %}"><span aria-hidden="true">✎</span> Редактировать</a>{% endif %}
+</section>
+{% else %}<div class="page-heading"><div><h1 class="record-title">{{ record.name }}</h1><p class="muted">{{ catalog.title }} · Код: {{ record.pk }}</p></div>{% if can_change %}<a class="button primary" href="{% url 'directories:edit' catalog.slug record.pk %}">Редактировать</a>{% endif %}</div>{% endif %}
+<section class="form-panel"><div class="panel-heading"><h2>Основные сведения</h2><span class="muted small">Версия {{ record.version }}</span></div><dl class="detail-grid">{% for field in detail_fields %}<div><dt>{{ field.label }}</dt><dd>{{ record|field_value:field.name|linebreaksbr }}</dd></div>{% endfor %}</dl></section>
+<section class="history-panel"><h2>История изменений</h2><table><thead><tr><th>Дата и время</th><th>Пользователь</th><th>Действие</th></tr></thead><tbody>{% for event in history %}<tr><td>{{ event.created_at|date:'d.m.Y H:i' }}</td><td>{% if event.actor %}{{ event.actor.get_full_name|default:event.actor.username }}{% else %}Начальная загрузка{% endif %}</td><td>{{ event.get_action_display }}</td></tr>{% empty %}<tr><td colspan="3">История отсутствует.</td></tr>{% endfor %}</tbody></table></section>
+<a class="button secondary back-link" href="{% url 'directories:list' catalog.slug %}">← Вернуться к списку</a>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}{% load static directory_tags %}
+{% block title %}{{ record.full_name }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'directories:home' %}">Справочники</a><span>/</span><a href="{% url 'directories:list' catalog.slug %}">Оборудование</a><span>/</span>Карточка</div>
+<section class="record-hero equipment-hero {% if record.equipment_image %}has-custom-image{% elif record.equipment_type.short_name|upper == 'ПДМ' %}record-hero-pdm{% else %}record-hero-generic{% endif %}"{% if record.equipment_image %} style="--equipment-image:url('{{ record.equipment_image.url }}')"{% endif %}>
+  <div class="record-hero-content"><div class="record-kind">ЕДИНИЦА ОБОРУДОВАНИЯ</div><h1 class="record-title equipment-title-single-line">{{ record.full_name }}</h1><p>{{ record.equipment_identifier }} · {{ record.status.name }}</p></div>
+  {% if can_change %}<a class="button record-edit" href="{% url 'directories:edit' catalog.slug record.pk %}"><span aria-hidden="true">✎</span> Редактировать</a>{% endif %}
+</section>
+
+<div class="equipment-tabs" data-tab-group>
+  <div class="tab-list" role="tablist" aria-label="Разделы карточки оборудования">
+    <button type="button" class="tab-button is-active" role="tab" aria-selected="true" data-tab-target="main">Основное</button>
+    <button type="button" class="tab-button" role="tab" aria-selected="false" data-tab-target="warranty">Условия гарантии</button>
+    <button type="button" class="tab-button" role="tab" aria-selected="false" data-tab-target="assemblies">Установленные узлы</button>
+    <button type="button" class="tab-button" role="tab" aria-selected="false" data-tab-target="documents">Документы</button>
+  </div>
+
+  <section class="tab-panel" role="tabpanel" data-tab-panel="main">
+    <div class="panel-heading"><h2>Основные сведения</h2><span class="muted small">Версия {{ record.version }}</span></div>
+    <dl class="detail-grid">
+      <div><dt>Идентификатор оборудования</dt><dd>{{ record.equipment_identifier }}</dd></div>
+      <div><dt>Тип техники</dt><dd>{{ record.equipment_type }}</dd></div>
+      <div><dt>Модель техники</dt><dd>{{ record.equipment_model }}</dd></div>
+      <div><dt>Статус техники</dt><dd>{{ record.status }}</dd></div>
+      <div><dt>Предприятие-собственник</dt><dd>{{ record.owner_display_name }}</dd></div>
+      <div><dt>Место эксплуатации</dt><dd>{{ record.operating_display_name }}</dd></div>
+      <div><dt>Заводской номер</dt><dd>{{ record.factory_number }}</dd></div>
+      <div><dt>Гаражный / хозяйственный номер</dt><dd>{{ record.garage_number|default:'—' }}</dd></div>
+      <div><dt>Дата ввода в эксплуатацию</dt><dd>{{ record.commissioning_date|date:'d.m.Y'|default:'—' }}</dd></div>
+    </dl>
+  </section>
+
+  <section class="tab-panel" role="tabpanel" data-tab-panel="warranty" hidden>
+    <div class="panel-heading"><h2>Условия гарантии</h2><span class="warranty-badge {% if record.warranty_status == 'Гарантия' %}is-valid{% endif %}">{{ record.warranty_status }}</span></div>
+    <dl class="detail-grid">
+      <div><dt>Статус гарантии</dt><dd>{{ record.warranty_status }}</dd></div>
+      <div><dt>Срок гарантии</dt><dd>{{ record.warranty_term_display }}</dd></div>
+      <div><dt>Дата окончания гарантии</dt><dd>{{ record.warranty_end_date|date:'d.m.Y'|default:'—' }}</dd></div>
+      <div><dt>Дата продления гарантии</dt><dd>{{ record.warranty_extension_date|date:'d.m.Y'|default:'—' }}</dd></div>
+      <div><dt>Длительность продления</dt><dd>{{ record.warranty_extension_display }}</dd></div>
+    </dl>
+  </section>
+
+  <section class="tab-panel" role="tabpanel" data-tab-panel="assemblies" hidden>
+    <div class="panel-heading"><h2>Установленные узлы</h2></div>
+    <dl class="detail-grid">
+      <div><dt>Номер ДВС</dt><dd>{{ record.engine_number|default:'—' }}</dd></div>
+      <div><dt>Система АСПТ</dt><dd>{{ record.fire_suppression_system|default:'—' }}</dd></div>
+      <div><dt>РДУ</dt><dd>{{ record.remote_control_installed|yesno:'Установлено,Не установлено' }}</dd></div>
+      <div><dt>ЦСС</dt><dd>{{ record.ccs_installed|yesno:'Установлено,Не установлено' }}{% if record.ccs_name %} · {{ record.ccs_name }}{% endif %}</dd></div>
+      <div><dt>Система управления</dt><dd>{{ record.control_system|default:'—' }}</dd></div>
+      <div><dt>Г/Ц</dt><dd>{{ record.hydraulic_cylinders|default:'—' }}</dd></div>
+    </dl>
+  </section>
+
+  <section class="tab-panel" role="tabpanel" data-tab-panel="documents" hidden>
+    <div class="panel-heading"><h2>Документы</h2></div>
+    <dl class="detail-grid">
+      <div><dt>Номер договора поставки</dt><dd>{{ record.supply_contract_number|default:'—' }}</dd></div>
+      <div><dt>Дата реализации</dt><dd>{{ record.sale_date|date:'d.m.Y'|default:'—' }}</dd></div>
+      <div><dt>Договор поставки машино-комплекта</dt><dd>{% if record.machine_kit_supply_contract %}<a href="{{ record.machine_kit_supply_contract.url }}">Открыть документ</a>{% else %}—{% endif %}</dd></div>
+      <div><dt>Инструкция по эксплуатации</dt><dd>{% if record.operation_manual %}<a href="{{ record.operation_manual.url }}">Открыть документ</a>{% else %}—{% endif %}</dd></div>
+    </dl>
+    <div class="document-list"><h3>Прочие документы</h3>{% for document in record.other_documents.all %}<a class="document-row" href="{{ document.file.url }}"><span>{{ document.title }}</span><small>Открыть ↗</small></a>{% empty %}<p class="muted">Дополнительные документы не прикреплены.</p>{% endfor %}</div>
+  </section>
+</div>
+
+<section class="history-panel"><h2>История изменений</h2><table><thead><tr><th>Дата и время</th><th>Пользователь</th><th>Действие</th></tr></thead><tbody>{% for event in history %}<tr><td>{{ event.created_at|date:'d.m.Y H:i' }}</td><td>{% if event.actor %}{{ event.actor.get_full_name|default:event.actor.username }}{% else %}Начальная загрузка{% endif %}</td><td>{{ event.get_action_display }}</td></tr>{% empty %}<tr><td colspan="3">История отсутствует.</td></tr>{% endfor %}</tbody></table></section>
+<a class="button secondary back-link" href="{% url 'directories:list' catalog.slug %}">← Вернуться к списку</a>
+{% endblock %}

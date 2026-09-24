@@ -1,0 +1,45 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Справочники{% endblock %} · Ремонтный Центр</title>
+  <link rel="icon" href="{% static 'branding/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'app/nsi.css' %}">
+  <script src="{% static 'app/nsi.js' %}" defer></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<a href="#main" class="skip-link">К содержимому</a>
+<header class="topbar">
+  <a class="brand" href="{% url 'public_home' %}"><img src="{% static 'branding/logo-light.svg' %}" alt="Ремонтный Центр"></a>
+  <div class="topbar-right"><span class="environment-label">Управление ремонтами</span>
+  {% if user.is_authenticated %}<span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+  <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="logout" type="submit">Выйти</button></form>{% endif %}</div>
+</header>
+{% if user.is_authenticated %}
+<div class="app-layout">
+<aside class="sidebar" aria-label="Навигация">
+  <div class="sidebar-label">РАБОЧЕЕ МЕСТО</div>
+  <a class="sidebar-main {% if request.resolver_match.url_name == 'workspace' %}is-current{% endif %}" href="{% url 'accounts:workspace' %}"><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#home"></use></svg><span>Мое рабочее место</span></a>
+  {% if navigation_catalogs %}<details class="nav-group" {% if request.resolver_match.app_name == 'directories' %}open{% endif %}><summary class="nav-group-title {% if request.resolver_match.app_name == 'directories' %}is-current{% endif %}"><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#book"></use></svg><span>Справочники</span><span class="nav-chevron">⌄</span></summary><nav aria-label="Справочники">{% for item in navigation_catalogs %}<a href="{% url 'directories:list' item.slug %}" class="nav-link {% if catalog.slug == item.slug %}is-current{% endif %}" {% if catalog.slug == item.slug %}aria-current="page"{% endif %}><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#{{ item.icon }}"></use></svg><span>{{ item.title }}</span></a>{% endfor %}</nav></details>{% endif %}
+  <details class="nav-group" {% if request.resolver_match.app_name == 'accounts' and request.resolver_match.url_name != 'workspace' %}open{% endif %}>
+    <summary class="nav-group-title {% if request.resolver_match.app_name == 'accounts' and request.resolver_match.url_name != 'workspace' %}is-current{% endif %}"><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#shield"></use></svg><span>Роли и доступ</span><span class="nav-chevron">⌄</span></summary>
+  <nav aria-label="Роли и доступ">
+    <a class="nav-link {% if request.resolver_match.url_name == 'requests' %}is-current{% endif %}" href="{% url 'accounts:requests' %}"><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#request"></use></svg><span>Мои заявки</span></a>
+    <a class="nav-link {% if request.resolver_match.url_name == 'roles' or request.resolver_match.url_name == 'role_edit' %}is-current{% endif %}" href="{% url 'accounts:roles' %}"><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#roles"></use></svg><span>Роли и права</span></a>
+    {% if perms.accounts.manage_access %}
+    <a class="nav-link {% if request.resolver_match.url_name == 'queue' or request.resolver_match.url_name == 'review' %}is-current{% endif %}" href="{% url 'accounts:queue' %}"><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#approve"></use></svg><span>Согласование</span></a>
+    <a class="nav-link {% if request.resolver_match.url_name == 'users' or request.resolver_match.url_name == 'new_user' or request.resolver_match.url_name == 'user_roles' %}is-current{% endif %}" href="{% url 'accounts:users' %}"><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#users"></use></svg><span>Пользователи</span></a>
+    <a class="nav-link {% if request.resolver_match.url_name == 'audit' %}is-current{% endif %}" href="{% url 'accounts:audit' %}"><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#history"></use></svg><span>Журнал доступа</span></a>
+    {% endif %}
+  </nav></details>
+  {% if user.is_staff %}<a class="admin-link" href="{% url 'admin:index' %}"><svg class="nav-icon"><use href="{% static 'app/icons.svg' %}#admin"></use></svg><span>Администрирование</span><span>↗</span></a>{% endif %}
+  <div class="sidebar-footer"><span class="status-dot"></span> Ремонтный Центр<br><small>Нормативно-справочная информация</small></div>
+</aside>
+<main id="main" class="workspace">
+  {% if messages %}<div class="messages" role="status">{% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+</div>
+{% else %}<main id="main" class="login-page">{% block anonymous_content %}{% endblock %}</main>{% endif %}
+</body></html>

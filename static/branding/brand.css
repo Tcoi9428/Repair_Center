@@ -1,0 +1,24 @@
+:root {
+  --rc-blue: #006cb5;
+  --rc-graphite: #1c1e20;
+  --rc-white: #ffffff;
+}
+
+.rc-brand {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.rc-brand__logo {
+  display: block;
+  width: 184px;
+  max-width: 100%;
+  height: auto;
+}
+
+.rc-brand__mark {
+  display: block;
+  width: 36px;
+  height: auto;
+}

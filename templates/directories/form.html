@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{% if record %}Редактирование{% else %}Создание{% endif %} · {{ catalog.title }}{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'directories:home' %}">Справочники</a><span>/</span><a href="{% url 'directories:list' catalog.slug %}">{{ catalog.title }}</a><span>/</span>{% if record %}Редактирование{% else %}Создание{% endif %}</div>
+<div class="page-heading"><div><h1>{% if record %}Редактирование записи{% else %}Создать {{ catalog.singular }}{% endif %}</h1><p class="muted">{{ catalog.title }}{% if record %} · Код: {{ record.code|default:record.pk }}{% endif %}</p></div></div>
+<form method="post" class="record-form" data-record-form novalidate>{% csrf_token %}
+{% for hidden in form.hidden_fields %}{{ hidden }}{% for error in hidden.errors %}<div class="error-summary">{{ error }}</div>{% endfor %}{% endfor %}
+{% if form.errors %}<div class="error-summary" role="alert"><strong>Не удалось сохранить запись.</strong>{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}{% if not form.non_field_errors %}<div>Проверьте выделенные поля.</div>{% endif %}</div>{% endif %}
+<section class="form-panel"><div class="panel-heading"><h2>Основные сведения</h2><span class="muted small">* Обязательные поля</span></div>
+{% if not record and catalog.slug != 'companies' %}<p class="system-note">Системный код будет присвоен автоматически при сохранении.</p>{% endif %}
+<div class="form-grid {% if catalog.slug != 'companies' %}compact-form{% endif %}">
+{% for field in form.visible_fields %}<div class="field {% if field.errors %}field-invalid{% endif %} {% if field.name == 'purpose' or field.name == 'company_contact' %}field-wide{% endif %}">
+{% if field.field.widget.input_type == 'checkbox' %}<label class="checkbox-label" for="{{ field.id_for_label }}">{{ field }} {{ field.label }}</label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required"> *</span>{% endif %}</label>{{ field }}{% endif %}
+{% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}{% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>{% endfor %}
+</div></section>
+<div class="form-actions"><button class="button primary" type="submit">{% if record %}Сохранить изменения{% else %}Создать запись{% endif %}</button><a class="button secondary" href="{% if record %}{% url 'directories:detail' catalog.slug record.pk %}{% else %}{% url 'directories:list' catalog.slug %}{% endif %}">Отмена</a>{% if record %}<a class="text-link" href="{% url 'directories:edit' catalog.slug record.pk %}">Загрузить актуальную версию</a>{% endif %}</div>
+</form>
+{% endblock %}
+
