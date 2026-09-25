@@ -265,6 +265,7 @@ No changes detected
 ## 15. Ключевые файлы
 
 - `README.md` — актуальная инструкция по возможностям, запуску и проверке.
+- `MVP_DEVELOPMENT_PLAN.md` — этапы дальнейшей разработки, вопросы для согласования и критерии приёмки.
 - `analysis/requirements-source.md` — текст исходного ТЗ.
 - `analysis/implementation-proposal.md` — предложение по реализации MVP.
 - `analysis/pkidp-source.md` — извлечение исходного справочника предприятий.
