@@ -56,6 +56,8 @@ class ReferenceTests(TestCase):
             'equipment-attributes': {'name':'Основное оборудование'},
             'warranty-attributes': {'name':'Гарантия'},
             'equipment-statuses': {'name':'В эксплуатации','is_active':'on'},
+            'maintenance-types': {'code':'TO-250','name':'ТО-250','interval_hours':'250','description':'Регламентное ТО','is_active':'on'},
+            'materials': {'nomenclature_number':'TEST-001','name':'Тестовый фильтр','default_unit':'шт'},
         }
         for catalog in CATALOGS:
             if catalog.slug == 'equipment':
@@ -272,7 +274,14 @@ class ReferenceTests(TestCase):
     def test_admin_forms_and_audit_readonly(self):
         self.client.force_login(self.admin)
         for catalog in CATALOGS:
-            self.assertEqual(self.client.get(reverse(f'admin:directories_{catalog.model._meta.model_name}_add')).status_code,200)
+            self.assertEqual(
+                self.client.get(
+                    reverse(
+                        f'admin:{catalog.model._meta.app_label}_{catalog.model._meta.model_name}_add'
+                    )
+                ).status_code,
+                200,
+            )
         self.assertEqual(self.client.get(reverse('admin:directories_auditentry_add')).status_code,403)
         record = EquipmentStatus.objects.create(name='Начальный')
         url = reverse('admin:directories_equipmentstatus_change', args=[record.pk])

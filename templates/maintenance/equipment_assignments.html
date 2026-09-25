@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Привязка технологических карт{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'directories:detail' 'equipment' equipment.pk %}">{{ equipment.full_name }}</a><span>/</span>Технологические карты</div>
+<div class="page-heading"><div><div class="eyebrow">{{ equipment.equipment_identifier }}</div><h1>Привязка технологических карт</h1><p class="muted">{{ equipment.full_name }} · доступны только карты модели {{ equipment.equipment_model.name }}.</p></div></div>
+<form method="post" class="record-form assignment-form">{% csrf_token %}<section class="form-panel"><div class="panel-heading"><h2>Доступные карты</h2><span class="muted small">Можно выбрать несколько</span></div>{% if form.technology_cards.field.queryset %}<div class="card-choice-list">{% for choice in form.technology_cards %}<label class="card-choice">{{ choice.tag }}<span><strong>{{ choice.choice_label }}</strong></span></label>{% endfor %}</div>{% else %}<div class="empty-state"><h3>Для этой модели нет технологических карт</h3><p>Сначала создайте карту для модели {{ equipment.equipment_model.name }}.</p></div>{% endif %}</section><div class="form-actions"><button class="button primary" type="submit">Сохранить привязки</button><a class="button secondary" href="{% url 'directories:detail' 'equipment' equipment.pk %}">Отмена</a></div></form>
+{% endblock %}

@@ -105,7 +105,10 @@ def record_detail(request, slug, pk):
     elif catalog.model is Equipment:
         queryset = queryset.select_related(
             'equipment_type', 'equipment_model', 'status', 'owner_company', 'operating_company', 'updated_by',
-        ).prefetch_related('other_documents')
+        ).prefetch_related(
+            'other_documents',
+            'technology_card_links__technology_card__maintenance_type',
+        )
     record = get_object_or_404(queryset, pk=pk)
     history = AuditEntry.objects.filter(model_name=catalog.model._meta.model_name, object_id=pk).select_related('actor')[:10]
     if catalog.model is Equipment:
@@ -114,6 +117,9 @@ def record_detail(request, slug, pk):
             'record': record,
             'can_change': request.user.has_perm(catalog.permission('change')),
             'history': history,
+            'technology_card_links': record.technology_card_links.select_related(
+                'technology_card', 'technology_card__maintenance_type'
+            ),
         })
     visual_kind = None
     if catalog.model is Company:

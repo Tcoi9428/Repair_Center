@@ -5,7 +5,15 @@ from django.contrib.auth.models import Permission
 from .models import Role, RoleRequest
 
 def available_permissions():
-    return Permission.objects.filter(content_type__app_label='directories', codename__regex=r'^(view|add|change)_').exclude(content_type__model__in=['auditentry', 'equipmentdocument']).order_by('content_type__model', 'codename')
+    return Permission.objects.filter(
+        content_type__app_label__in=['directories', 'maintenance'],
+        codename__regex=r'^(view|add|change)_',
+    ).exclude(
+        content_type__model__in=[
+            'auditentry', 'equipmentdocument', 'technologycardoperation',
+            'technologycardmaterial', 'equipmenttechnologycard',
+        ]
+    ).order_by('content_type__app_label', 'content_type__model', 'codename')
 
 class PermissionChoice(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):

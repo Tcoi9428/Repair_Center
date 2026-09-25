@@ -13,6 +13,7 @@
     <button type="button" class="tab-button" role="tab" aria-selected="false" data-tab-target="warranty">Условия гарантии</button>
     <button type="button" class="tab-button" role="tab" aria-selected="false" data-tab-target="assemblies">Установленные узлы</button>
     <button type="button" class="tab-button" role="tab" aria-selected="false" data-tab-target="documents">Документы</button>
+    {% if perms.maintenance.view_technologycard %}<button type="button" class="tab-button" role="tab" aria-selected="false" data-tab-target="technology-cards">Технологические карты</button>{% endif %}
   </div>
 
   <section class="tab-panel" role="tabpanel" data-tab-panel="main">
@@ -63,6 +64,11 @@
     </dl>
     <div class="document-list"><h3>Прочие документы</h3>{% for document in record.other_documents.all %}<a class="document-row" href="{{ document.file.url }}"><span>{{ document.title }}</span><small>Открыть ↗</small></a>{% empty %}<p class="muted">Дополнительные документы не прикреплены.</p>{% endfor %}</div>
   </section>
+
+  {% if perms.maintenance.view_technologycard %}<section class="tab-panel" role="tabpanel" data-tab-panel="technology-cards" hidden>
+    <div class="panel-heading"><div><h2>Технологические карты</h2><p class="muted small">Карты, назначенные этой единице оборудования.</p></div>{% if can_change and perms.maintenance.change_technologycard %}<a class="button secondary" href="{% url 'maintenance:equipment_assignments' record.pk %}">Изменить привязки</a>{% endif %}</div>
+    <div class="linked-card-list">{% for link in technology_card_links %}<a class="linked-card-row" href="{% url 'maintenance:card_detail' link.technology_card.pk %}"><span><strong>{{ link.technology_card.name }}</strong><small>{{ link.technology_card.maintenance_type.name }} · версия {{ link.technology_card.revision }}</small></span><span class="badge {% if link.technology_card.status == 'active' %}positive{% else %}neutral{% endif %}">{{ link.technology_card.get_status_display }}</span></a>{% empty %}<div class="empty-state compact-empty"><h3>Карты пока не назначены</h3><p>Назначьте технологические карты, подходящие для модели {{ record.equipment_model.name }}.</p></div>{% endfor %}</div>
+  </section>{% endif %}
 </div>
 
 <section class="history-panel"><h2>История изменений</h2><table><thead><tr><th>Дата и время</th><th>Пользователь</th><th>Действие</th></tr></thead><tbody>{% for event in history %}<tr><td>{{ event.created_at|date:'d.m.Y H:i' }}</td><td>{% if event.actor %}{{ event.actor.get_full_name|default:event.actor.username }}{% else %}Начальная загрузка{% endif %}</td><td>{{ event.get_action_display }}</td></tr>{% empty %}<tr><td colspan="3">История отсутствует.</td></tr>{% endfor %}</tbody></table></section>

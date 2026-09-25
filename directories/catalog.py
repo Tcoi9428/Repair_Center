@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from . import forms, models
+from maintenance import forms as maintenance_forms
+from maintenance import models as maintenance_models
 
 @dataclass(frozen=True)
 class Catalog:
@@ -14,7 +16,7 @@ class Catalog:
     icon: str = 'book'
 
     def permission(self, action):
-        return f'directories.{action}_{self.model._meta.model_name}'
+        return f'{self.model._meta.app_label}.{action}_{self.model._meta.model_name}'
 
 CATALOGS = [
     Catalog('equipment', 'Оборудование', 'оборудование', 'Единицы техники, их эксплуатация, гарантия, установленные узлы и документы.', models.Equipment, forms.EquipmentForm,
@@ -33,5 +35,9 @@ CATALOGS = [
             ('id', 'name'), ('name',), 'shield'),
     Catalog('equipment-statuses', 'Статусы техники', 'статус техники', 'Состояния жизненного цикла и доступность статусов.', models.EquipmentStatus, forms.EquipmentStatusForm,
             ('id', 'name', 'is_active'), ('name',), 'status'),
+    Catalog('maintenance-types', 'Виды технического обслуживания', 'вид технического обслуживания', 'Интервалы и виды регламентного обслуживания и ремонта.', maintenance_models.MaintenanceType, maintenance_forms.MaintenanceTypeForm,
+            ('id', 'code', 'name', 'interval_hours', 'is_active'), ('code', 'name', 'description'), 'wrench'),
+    Catalog('materials', 'Материалы и запасные части', 'материал', 'Номенклатура, используемая в технологических картах.', maintenance_models.Material, maintenance_forms.MaterialForm,
+            ('id', 'nomenclature_number', 'name', 'default_unit'), ('nomenclature_number', 'name'), 'box'),
 ]
 BY_SLUG = {item.slug: item for item in CATALOGS}

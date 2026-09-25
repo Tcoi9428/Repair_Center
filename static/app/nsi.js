@@ -71,3 +71,29 @@ document.querySelectorAll('[data-equipment-form]').forEach(form => {
   typeSelect.addEventListener('change', syncModels);
   syncModels();
 });
+
+document.querySelectorAll('[data-formset]').forEach(container => {
+  const addButton = container.querySelector('[data-formset-add]');
+  const body = container.querySelector('[data-formset-body]');
+  const template = container.querySelector('template[data-empty-form]');
+  const totalInput = container.querySelector('input[name$="-TOTAL_FORMS"]');
+  if (!addButton || !body || !template || !totalInput) return;
+
+  const bindRemove = row => {
+    const remove = row.querySelector('[data-formset-remove]');
+    if (remove) remove.addEventListener('click', () => row.remove());
+  };
+  body.querySelectorAll('[data-form-row]').forEach(bindRemove);
+  addButton.addEventListener('click', () => {
+    const index = Number(totalInput.value);
+    const html = template.innerHTML.replaceAll('__prefix__', String(index));
+    const holder = document.createElement('tbody');
+    holder.innerHTML = html.trim();
+    const row = holder.firstElementChild;
+    if (!row) return;
+    body.appendChild(row);
+    totalInput.value = String(index + 1);
+    bindRemove(row);
+    row.querySelector('input, select, textarea')?.focus();
+  });
+});

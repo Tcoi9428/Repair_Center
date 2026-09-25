@@ -14,4 +14,7 @@
 <symbol id="users" viewBox="0 0 24 24"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M2 21v-3a6 6 0 0 1 12 0v3m1-7a5 5 0 0 1 7 5v2"/></symbol>
 <symbol id="history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-7M3 4v6h6m3-4v6l4 2"/></symbol>
 <symbol id="admin" viewBox="0 0 24 24"><path d="M12 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8-3 2 1-2 4-2-1-2 2 1 2-4 2-1-2h-3l-1 2-4-2 1-2-2-2-2 1-2-4 2-1v-3L0 8l2-4 2 1 2-2-1-2 4-2 1 2h3l1-2 4 2-1 2 2 2 2-1 2 4-2 1z"/></symbol>
+<symbol id="wrench" viewBox="0 0 24 24"><path d="M14 6a5 5 0 0 0-6 6L3 17a3 3 0 0 0 4 4l5-5a5 5 0 0 0 6-6l-3 3-4-4z"/></symbol>
+<symbol id="box" viewBox="0 0 24 24"><path d="m3 7 9-4 9 4-9 4zm0 0v10l9 4 9-4V7m-9 4v10"/></symbol>
+<symbol id="clipboard" viewBox="0 0 24 24"><path d="M8 4h8l1 3h3v14H4V7h3zm1 6h6m-6 4h6m-6 4h4"/></symbol>
 </defs></svg>

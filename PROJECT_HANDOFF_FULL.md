@@ -247,7 +247,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start-local.ps1
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py check
-.\.venv\Scripts\python.exe manage.py test accounts directories
+.\.venv\Scripts\python.exe manage.py test accounts directories maintenance
 .\.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
 ```
 
@@ -255,7 +255,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start-local.ps1
 
 ```text
 System check identified no issues (0 silenced).
-Ran 28 tests
+Ran 34 tests
 OK
 No changes detected
 ```
@@ -269,9 +269,13 @@ No changes detected
 - `analysis/requirements-source.md` — текст исходного ТЗ.
 - `analysis/implementation-proposal.md` — предложение по реализации MVP.
 - `analysis/pkidp-source.md` — извлечение исходного справочника предприятий.
+- `analysis/maintenance-cards-source.md` — структура и контрольные итоги чек-листов ПДМ 10 ШААЗ.
 - `CHAT_HISTORY.md` — ранняя дословная история диалога.
 - `directories/models.py` — модели справочников и оборудования.
 - `directories/views.py` — страницы справочников.
+- `maintenance/models.py` — виды ТО, материалы, версии технологических карт, операции и привязки к оборудованию.
+- `maintenance/importers.py` — чтение исходной книги чек-листов.
+- `maintenance/management/commands/import_technology_cards.py` — повторяемая команда импорта.
 - `accounts/models.py` и `accounts/views.py` — роли, заявки и администрирование доступа.
 - `templates/` — страницы приложения.
 - `static/app/` — стили и JavaScript интерфейса.
@@ -295,6 +299,7 @@ No changes detected
 12. Полные наименования собственника и места эксплуатации.
 13. Оранжево-чёрную окраску ПДМ на фоне карточки.
 14. Публикацию проекта в GitHub-репозитории `https://github.com/Tcoi9428/Repair_Center.git`.
+15. Базовый функционал технологических карт и загрузку карт ПДМ 10 ШААЗ от ТО-250 до ТО-10000.
 
 ## 17. Ближайшее продолжение разработки
 
@@ -302,7 +307,7 @@ No changes detected
 
 - входящая заявка на ремонт;
 - внутренний наряд-заказ;
-- технологические карты и их версии;
+- утверждение и неизменяемость действующих версий технологических карт;
 - плановое ТО-250, ТО-500 и правила совмещения операций;
 - дефекты и частичное выполнение;
 - состав бригады и фактическое время каждого сотрудника;
@@ -317,5 +322,5 @@ No changes detected
 ## 18. Готовый запрос для Codex на другом устройстве
 
 ```text
-Открой проект «Ремонтный Центр». Сначала прочитай PROJECT_HANDOFF_FULL.md, README.md, analysis/implementation-proposal.md и актуальные модели Django. Продолжай разработку поэтапно, не меняя согласованную палитру #006cb5/#1c1e20/#ffffff и айдентику «РЦ». Текущий MVP — браузерная система Django + PostgreSQL без внешних интеграций, отчётности и мобильного приложения. Перед реализацией нового бизнес-процесса сначала зафиксируй его статусы, роли, поля и переходы. Не добавляй .env, .local, media, пароли и секреты в Git. После изменений выполни manage.py check, тесты accounts/directories и makemigrations --check --dry-run; покажи правильный ожидаемый результат проверки.
+Открой проект «Ремонтный Центр». Сначала прочитай PROJECT_HANDOFF_FULL.md, README.md, MVP_DEVELOPMENT_PLAN.md, analysis/implementation-proposal.md, analysis/maintenance-cards-source.md и актуальные модели Django. Продолжай разработку поэтапно, не меняя согласованную палитру #006cb5/#1c1e20/#ffffff и айдентику «РЦ». Текущий MVP — браузерная система Django + PostgreSQL без внешних интеграций, отчётности и мобильного приложения. Уже реализованы технологические карты, их операции, материалы и привязка к оборудованию; шесть карт ПДМ 10 ШААЗ импортируются командой import_technology_cards. Перед реализацией нового бизнес-процесса сначала зафиксируй его статусы, роли, поля и переходы. Не добавляй .env, .local, media, пароли и секреты в Git. После изменений выполни manage.py check, тесты accounts/directories/maintenance и makemigrations --check --dry-run; покажи правильный ожидаемый результат проверки.
 ```

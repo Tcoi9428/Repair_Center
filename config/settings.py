@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions', 'django.contrib.messages', 'django.contrib.staticfiles',
     'directories.apps.DirectoriesConfig',
     'accounts.apps.AccountsConfig',
+    'maintenance.apps.MaintenanceConfig',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware', 'django.contrib.sessions.middleware.SessionMiddleware',
@@ -28,6 +29,7 @@ TEMPLATES = [{
     'APP_DIRS': True, 'OPTIONS': {'context_processors': [
         'django.template.context_processors.request', 'django.contrib.auth.context_processors.auth',
         'django.contrib.messages.context_processors.messages', 'directories.context_processors.navigation',
+        'maintenance.context_processors.navigation',
     ]},
 }]
 WSGI_APPLICATION = 'config.wsgi.application'

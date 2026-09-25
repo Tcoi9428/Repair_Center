@@ -19,8 +19,18 @@ class Command(BaseCommand):
         role, _ = Group.objects.get_or_create(name=ROLE_NAME)
         for catalog in CATALOGS:
             for action in ('view', 'add', 'change'):
-                permission = Permission.objects.get(content_type__app_label='directories', codename=f'{action}_{catalog.model._meta.model_name}')
+                permission = Permission.objects.get(
+                    content_type__app_label=catalog.model._meta.app_label,
+                    codename=f'{action}_{catalog.model._meta.model_name}',
+                )
                 role.permissions.add(permission)
+        for action in ('view', 'add', 'change'):
+            role.permissions.add(
+                Permission.objects.get(
+                    content_type__app_label='maintenance',
+                    codename=f'{action}_technologycard',
+                )
+            )
         role.permissions.add(Permission.objects.get(content_type__app_label='directories', codename='view_auditentry'))
         if options['username']:
             from django.contrib.auth import get_user_model
@@ -50,4 +60,3 @@ class Command(BaseCommand):
             for name in ('В эксплуатации', 'Списано'):
                 seed(EquipmentStatus, name=name, is_active=True)
         self.stdout.write(self.style.SUCCESS('Роль «Специалист НСИ» готова.' + (' Начальные значения добавлены, существующие записи не перезаписаны.' if options['seed'] else '')))
-
