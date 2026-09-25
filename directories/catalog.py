@@ -37,6 +37,8 @@ CATALOGS = [
             ('id', 'name', 'is_active'), ('name',), 'status'),
     Catalog('maintenance-types', 'Виды технического обслуживания', 'вид технического обслуживания', 'Интервалы и виды регламентного обслуживания и ремонта.', maintenance_models.MaintenanceType, maintenance_forms.MaintenanceTypeForm,
             ('id', 'code', 'name', 'interval_hours', 'is_active'), ('code', 'name', 'description'), 'wrench'),
+    Catalog('work-types', 'Виды работ', 'вид работ', 'Классификация ремонтных и диагностических работ.', maintenance_models.WorkType, maintenance_forms.WorkTypeForm,
+            ('id', 'code', 'name', 'is_active'), ('code', 'name', 'description'), 'tools'),
     Catalog('materials', 'Материалы и запасные части', 'материал', 'Номенклатура, используемая в технологических картах.', maintenance_models.Material, maintenance_forms.MaterialForm,
             ('id', 'nomenclature_number', 'name', 'default_unit'), ('nomenclature_number', 'name'), 'box'),
 ]

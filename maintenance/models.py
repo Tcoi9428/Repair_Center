@@ -26,6 +26,21 @@ class MaintenanceType(ReferenceRecord):
         return self.name
 
 
+class WorkType(ReferenceRecord):
+    code = models.CharField('Шифр вида работ', max_length=20, unique=True)
+    name = models.CharField('Наименование вида работ', max_length=160, unique=True)
+    description = models.TextField('Описание', blank=True)
+    is_active = models.BooleanField('Активен', default=True)
+
+    class Meta:
+        verbose_name = 'Вид работ'
+        verbose_name_plural = 'Виды работ'
+        ordering = ['id']
+
+    def __str__(self):
+        return f'{self.code} · {self.name}'
+
+
 class Material(ReferenceRecord):
     nomenclature_number = models.CharField('Номенклатурный номер', max_length=120, blank=True)
     name = models.CharField('Наименование материала', max_length=300)
@@ -246,3 +261,66 @@ class EquipmentTechnologyCard(models.Model):
             raise ValidationError(
                 {'technology_card': 'Карта относится к другой модели техники.'}
             )
+
+
+class EquipmentOperatingHours(ReferenceRecord):
+    equipment = models.ForeignKey(
+        Equipment,
+        verbose_name='Оборудование',
+        on_delete=models.CASCADE,
+        related_name='operating_hour_readings',
+    )
+    measured_at = models.DateTimeField('Дата и время показания')
+    operating_hours = models.DecimalField(
+        'Наработка, м/ч',
+        max_digits=12,
+        decimal_places=1,
+        validators=[MinValueValidator(Decimal('0'))],
+    )
+    note = models.CharField('Примечание', max_length=300, blank=True)
+
+    class Meta:
+        verbose_name = 'Показание наработки оборудования'
+        verbose_name_plural = 'Показания наработки оборудования'
+        ordering = ['-measured_at', '-id']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['equipment', 'measured_at'],
+                name='equipment_operating_hours_timestamp_unique',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.equipment}: {self.operating_hours} м/ч на {self.measured_at:%d.%m.%Y %H:%M}'
+
+    @property
+    def change_from_previous(self):
+        previous = type(self).objects.filter(
+            equipment_id=self.equipment_id,
+            measured_at__lt=self.measured_at,
+        ).order_by('-measured_at').first()
+        if previous is None:
+            return None
+        return self.operating_hours - previous.operating_hours
+
+    def clean(self):
+        super().clean()
+        if not self.equipment_id or not self.measured_at or self.operating_hours is None:
+            return
+        readings = type(self).objects.filter(equipment_id=self.equipment_id).exclude(pk=self.pk)
+        previous = readings.filter(measured_at__lt=self.measured_at).order_by('-measured_at').first()
+        following = readings.filter(measured_at__gt=self.measured_at).order_by('measured_at').first()
+        if previous and self.operating_hours < previous.operating_hours:
+            raise ValidationError({
+                'operating_hours': (
+                    f'Показание не может быть меньше предыдущего: '
+                    f'{previous.operating_hours} м/ч на {previous.measured_at:%d.%m.%Y %H:%M}.'
+                )
+            })
+        if following and self.operating_hours > following.operating_hours:
+            raise ValidationError({
+                'operating_hours': (
+                    f'Показание не может быть больше следующего: '
+                    f'{following.operating_hours} м/ч на {following.measured_at:%d.%m.%Y %H:%M}.'
+                )
+            })

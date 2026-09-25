@@ -4,6 +4,7 @@ from django.db import transaction
 from directories.catalog import CATALOGS
 from directories.models import EquipmentType, EquipmentModel, EquipmentAttribute, WarrantyAttribute, EquipmentStatus
 from directories.services import record_change
+from maintenance.models import WorkType
 
 ROLE_NAME = 'Специалист НСИ'
 
@@ -31,6 +32,12 @@ class Command(BaseCommand):
                     codename=f'{action}_technologycard',
                 )
             )
+        role.permissions.add(
+            Permission.objects.get(
+                content_type__app_label='maintenance',
+                codename='view_equipmentoperatinghours',
+            )
+        )
         role.permissions.add(Permission.objects.get(content_type__app_label='directories', codename='view_auditentry'))
         if options['username']:
             from django.contrib.auth import get_user_model
@@ -59,4 +66,16 @@ class Command(BaseCommand):
                 seed(WarrantyAttribute, name=name)
             for name in ('В эксплуатации', 'Списано'):
                 seed(EquipmentStatus, name=name, is_active=True)
+            for code, name, description in (
+                ('ТО', 'Техническое обслуживание', 'Регламентные операции технического обслуживания.'),
+                ('ТР', 'Текущий ремонт', 'Работы по устранению неисправностей и восстановлению работоспособности.'),
+                ('Диаг', 'Диагностика', 'Проверка технического состояния и поиск неисправностей.'),
+                ('КР', 'Капитальный ремонт', 'Комплексное восстановление ресурса оборудования.'),
+            ):
+                obj, created = WorkType.objects.get_or_create(
+                    code=code,
+                    defaults={'name': name, 'description': description},
+                )
+                if created:
+                    record_change(obj, None, {}, 'create')
         self.stdout.write(self.style.SUCCESS('Роль «Специалист НСИ» готова.' + (' Начальные значения добавлены, существующие записи не перезаписаны.' if options['seed'] else '')))

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}{% if reading %}Изменение{% else %}Регистрация{% endif %} наработки{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{% url 'directories:detail' 'equipment' equipment.pk %}">{{ equipment.full_name }}</a><span>/</span>Наработка</div>
+<div class="page-heading"><div><div class="eyebrow">ЭКСПЛУАТАЦИОННЫЕ ДАННЫЕ</div><h1>{% if reading %}Изменение показания{% else %}Новое показание наработки{% endif %}</h1><p class="muted">{{ equipment.full_name }} · {{ equipment.equipment_identifier }}</p></div></div>
+<form method="post" class="record-form compact-record-form" data-record-form>{% csrf_token %}
+  {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+  <section class="form-panel"><div class="panel-heading"><h2>Показание счётчика</h2><span class="muted small">* Обязательные поля</span></div>
+    {% if form.non_field_errors %}<div class="error-summary" role="alert">{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>{% endif %}
+    <div class="form-grid">{% for field in form.visible_fields %}<div class="field {% if field.errors %}field-invalid{% endif %} {% if field.name == 'note' %}field-wide{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}<span class="required"> *</span>{% endif %}</label>{{ field }}{% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}{% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}</div>{% endfor %}</div>
+  </section>
+  <div class="form-actions"><button class="button primary" type="submit">Сохранить показание</button><a class="button secondary" href="{% url 'directories:detail' 'equipment' equipment.pk %}#operating-hours">Отмена</a></div>
+</form>
+{% endblock %}

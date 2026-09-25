@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import (
+    EquipmentOperatingHours,
     EquipmentTechnologyCard,
     TechnologyCard,
     TechnologyCardMaterial,
@@ -30,3 +31,11 @@ class TechnologyCardAdmin(admin.ModelAdmin):
 class EquipmentTechnologyCardAdmin(admin.ModelAdmin):
     list_display = ['equipment', 'technology_card', 'assigned_at', 'assigned_by']
     search_fields = ['equipment__equipment_identifier', 'technology_card__name']
+
+
+@admin.register(EquipmentOperatingHours)
+class EquipmentOperatingHoursAdmin(admin.ModelAdmin):
+    list_display = ['equipment', 'measured_at', 'operating_hours', 'updated_by']
+    list_filter = ['measured_at', 'equipment__equipment_model']
+    search_fields = ['equipment__equipment_identifier', 'equipment__garage_number']
+    readonly_fields = ['created_at', 'updated_at', 'updated_by', 'version']

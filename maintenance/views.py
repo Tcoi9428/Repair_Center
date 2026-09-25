@@ -8,17 +8,21 @@ from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
 from directories.models import AuditEntry, Equipment, EquipmentModel
 
 from .forms import (
     EquipmentTechnologyCardForm,
+    EquipmentOperatingHoursForm,
     TechnologyCardForm,
     TechnologyCardMaterialFormSet,
     TechnologyCardOperationFormSet,
 )
-from .models import MaintenanceType, TechnologyCard
+from .models import EquipmentOperatingHours, MaintenanceType, TechnologyCard
+from directories.services import save_record
 from .services import grouped_operations, save_equipment_assignments, save_technology_card
 
 
@@ -157,3 +161,45 @@ def equipment_assignments(request, equipment_pk):
         'maintenance/equipment_assignments.html',
         {'form': form, 'equipment': equipment, 'maintenance_section': True},
     )
+
+
+@login_required
+@require_http_methods(['GET', 'POST'])
+def operating_hours_edit(request, equipment_pk=None, pk=None):
+    action = 'change' if pk else 'add'
+    if not request.user.has_perm(f'maintenance.{action}_equipmentoperatinghours'):
+        raise PermissionDenied
+    if pk:
+        reading = get_object_or_404(
+            EquipmentOperatingHours.objects.select_related('equipment', 'equipment__equipment_model'),
+            pk=pk,
+        )
+        equipment = reading.equipment
+    else:
+        equipment = get_object_or_404(
+            Equipment.objects.select_related('equipment_model'),
+            pk=equipment_pk,
+        )
+        reading = EquipmentOperatingHours(equipment=equipment, measured_at=timezone.now())
+    form = EquipmentOperatingHoursForm(request.POST or None, instance=reading)
+    if request.method == 'POST' and form.is_valid():
+        try:
+            saved = save_record(form, request.user)
+        except IntegrityError:
+            form.add_error('measured_at', 'Для этой даты и времени показание уже зарегистрировано.')
+        except ValidationError as exc:
+            if hasattr(exc, 'message_dict'):
+                for field, errors in exc.message_dict.items():
+                    for error in errors:
+                        form.add_error(field if field in form.fields else None, error)
+            else:
+                form.add_error(None, exc)
+        else:
+            messages.success(request, 'Показание наработки сохранено.')
+            return redirect(f'{reverse("directories:detail", args=["equipment", saved.equipment_id])}#operating-hours')
+    return render(request, 'maintenance/operating_hours_form.html', {
+        'form': form,
+        'equipment': equipment,
+        'reading': reading if reading.pk else None,
+        'equipment_section': True,
+    })

@@ -48,6 +48,8 @@ document.querySelectorAll('[data-tab-group]').forEach(group => {
     panels.forEach(panel => { panel.hidden = panel.dataset.tabPanel !== id; });
   };
   buttons.forEach(button => button.addEventListener('click', () => activate(button.dataset.tabTarget)));
+  const requestedTab = window.location.hash.slice(1);
+  if (requestedTab && buttons.some(button => button.dataset.tabTarget === requestedTab)) activate(requestedTab);
   const invalidPanel = panels.find(panel => panel.querySelector('.field-invalid, .field-error'));
   if (invalidPanel) activate(invalidPanel.dataset.tabPanel);
 });

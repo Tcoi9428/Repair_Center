@@ -4,11 +4,13 @@ from django.forms.models import BaseInlineFormSet
 from directories.forms import ReferenceForm
 
 from .models import (
+    EquipmentOperatingHours,
     MaintenanceType,
     Material,
     TechnologyCard,
     TechnologyCardMaterial,
     TechnologyCardOperation,
+    WorkType,
 )
 
 
@@ -16,6 +18,12 @@ class MaintenanceTypeForm(ReferenceForm):
     class Meta:
         model = MaintenanceType
         fields = ['code', 'name', 'interval_hours', 'description', 'is_active']
+
+
+class WorkTypeForm(ReferenceForm):
+    class Meta:
+        model = WorkType
+        fields = ['code', 'name', 'description', 'is_active']
 
 
 class MaterialForm(ReferenceForm):
@@ -113,3 +121,21 @@ class EquipmentTechnologyCardForm(forms.Form):
         self.fields['technology_cards'].initial = equipment.technology_card_links.values_list(
             'technology_card_id', flat=True
         )
+
+
+class EquipmentOperatingHoursForm(ReferenceForm):
+    class Meta:
+        model = EquipmentOperatingHours
+        fields = ['measured_at', 'operating_hours', 'note']
+        localized_fields = ['operating_hours']
+        widgets = {
+            'measured_at': forms.DateTimeInput(
+                format='%Y-%m-%dT%H:%M',
+                attrs={'type': 'datetime-local'},
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['measured_at'].input_formats = ['%Y-%m-%dT%H:%M']
+        self.fields['operating_hours'].help_text = 'Фактическое показание счётчика моточасов. Уменьшение значения запрещено.'

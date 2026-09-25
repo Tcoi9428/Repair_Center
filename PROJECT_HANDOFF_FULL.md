@@ -255,7 +255,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\start-local.ps1
 
 ```text
 System check identified no issues (0 silenced).
-Ran 34 tests
+Ran 38 tests
 OK
 No changes detected
 ```
@@ -274,6 +274,7 @@ No changes detected
 - `directories/models.py` — модели справочников и оборудования.
 - `directories/views.py` — страницы справочников.
 - `maintenance/models.py` — виды ТО, материалы, версии технологических карт, операции и привязки к оборудованию.
+- `maintenance/models.py` также содержит справочник видов работ и журнал показаний моточасов оборудования.
 - `maintenance/importers.py` — чтение исходной книги чек-листов.
 - `maintenance/management/commands/import_technology_cards.py` — повторяемая команда импорта.
 - `accounts/models.py` и `accounts/views.py` — роли, заявки и администрирование доступа.
@@ -300,6 +301,7 @@ No changes detected
 13. Оранжево-чёрную окраску ПДМ на фоне карточки.
 14. Публикацию проекта в GitHub-репозитории `https://github.com/Tcoi9428/Repair_Center.git`.
 15. Базовый функционал технологических карт и загрузку карт ПДМ 10 ШААЗ от ТО-250 до ТО-10000.
+16. Справочник видов работ: ТО, ТР, Диаг, КР; журнал наработки и последнее актуальное показание в карточке оборудования.
 
 ## 17. Ближайшее продолжение разработки
 
@@ -322,5 +324,5 @@ No changes detected
 ## 18. Готовый запрос для Codex на другом устройстве
 
 ```text
-Открой проект «Ремонтный Центр». Сначала прочитай PROJECT_HANDOFF_FULL.md, README.md, MVP_DEVELOPMENT_PLAN.md, analysis/implementation-proposal.md, analysis/maintenance-cards-source.md и актуальные модели Django. Продолжай разработку поэтапно, не меняя согласованную палитру #006cb5/#1c1e20/#ffffff и айдентику «РЦ». Текущий MVP — браузерная система Django + PostgreSQL без внешних интеграций, отчётности и мобильного приложения. Уже реализованы технологические карты, их операции, материалы и привязка к оборудованию; шесть карт ПДМ 10 ШААЗ импортируются командой import_technology_cards. Перед реализацией нового бизнес-процесса сначала зафиксируй его статусы, роли, поля и переходы. Не добавляй .env, .local, media, пароли и секреты в Git. После изменений выполни manage.py check, тесты accounts/directories/maintenance и makemigrations --check --dry-run; покажи правильный ожидаемый результат проверки.
+Открой проект «Ремонтный Центр». Сначала прочитай PROJECT_HANDOFF_FULL.md, README.md, MVP_DEVELOPMENT_PLAN.md, analysis/implementation-proposal.md, analysis/maintenance-cards-source.md и актуальные модели Django. Продолжай разработку поэтапно, не меняя согласованную палитру #006cb5/#1c1e20/#ffffff и айдентику «РЦ». Текущий MVP — браузерная система Django + PostgreSQL без внешних интеграций, отчётности и мобильного приложения. Уже реализованы технологические карты, их операции, материалы и привязка к оборудованию; шесть карт ПДМ 10 ШААЗ импортируются командой import_technology_cards. Также реализованы справочник видов работ и базовый журнал наработки оборудования. Перед реализацией нового бизнес-процесса сначала зафиксируй его статусы, роли, поля и переходы. Не добавляй .env, .local, media, пароли и секреты в Git. После изменений выполни manage.py check, тесты accounts/directories/maintenance и makemigrations --check --dry-run; покажи правильный ожидаемый результат проверки.
 ```

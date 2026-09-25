@@ -57,6 +57,7 @@ class ReferenceTests(TestCase):
             'warranty-attributes': {'name':'Гарантия'},
             'equipment-statuses': {'name':'В эксплуатации','is_active':'on'},
             'maintenance-types': {'code':'TO-250','name':'ТО-250','interval_hours':'250','description':'Регламентное ТО','is_active':'on'},
+            'work-types': {'code':'TEST-WORK','name':'Тестовый вид работ','description':'Тестовое описание','is_active':'on'},
             'materials': {'nomenclature_number':'TEST-001','name':'Тестовый фильтр','default_unit':'шт'},
         }
         for catalog in CATALOGS:

@@ -108,6 +108,7 @@ def record_detail(request, slug, pk):
         ).prefetch_related(
             'other_documents',
             'technology_card_links__technology_card__maintenance_type',
+            'operating_hour_readings__updated_by',
         )
     record = get_object_or_404(queryset, pk=pk)
     history = AuditEntry.objects.filter(model_name=catalog.model._meta.model_name, object_id=pk).select_related('actor')[:10]
@@ -120,6 +121,10 @@ def record_detail(request, slug, pk):
             'technology_card_links': record.technology_card_links.select_related(
                 'technology_card', 'technology_card__maintenance_type'
             ),
+            'operating_hour_readings': record.operating_hour_readings.all()[:20],
+            'latest_operating_hours': record.operating_hour_readings.first(),
+            'can_add_operating_hours': request.user.has_perm('maintenance.add_equipmentoperatinghours'),
+            'can_change_operating_hours': request.user.has_perm('maintenance.change_equipmentoperatinghours'),
         })
     visual_kind = None
     if catalog.model is Company:

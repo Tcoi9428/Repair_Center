@@ -1,23 +1,28 @@
 from io import StringIO
 from pathlib import Path
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.contrib.auth.models import Permission
 from django.core.management import call_command
 from django.test import Client, TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from directories.models import Company, Equipment, EquipmentModel, EquipmentStatus, EquipmentType
 
 from .importers import parse_workbook
 from .models import (
     EquipmentTechnologyCard,
+    EquipmentOperatingHours,
     MaintenanceType,
     Material,
     TechnologyCard,
     TechnologyCardMaterial,
     TechnologyCardOperation,
+    WorkType,
 )
 
 
@@ -178,3 +183,81 @@ class TechnologyCardImportTests(TestCase):
         call_command('import_technology_cards', str(self.source), assign_existing=True, stdout=output)
         self.assertEqual(TechnologyCard.objects.count(), 6)
         self.assertIn('пропущено: 6', output.getvalue().lower())
+
+
+class WorkTypeAndOperatingHoursTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        call_command('setup_nsi', '--seed', stdout=StringIO())
+        cls.user = get_user_model().objects.create_user('hours-operator', password='Test-only-84!Account')
+        cls.user.user_permissions.add(*Permission.objects.filter(
+            codename__in=['view_equipmentoperatinghours', 'add_equipmentoperatinghours', 'change_equipmentoperatinghours', 'view_equipment'],
+        ))
+        equipment_type = EquipmentType.objects.get(short_name='ПДМ')
+        equipment_model = EquipmentModel.objects.get(name='ПДМ 10 ШААЗ')
+        status = EquipmentStatus.objects.get(name='В эксплуатации')
+        company = Company.objects.create(code='HOURS', company_name_full='АО Рудник', company_name_top_full='АО Рудник')
+        cls.equipment = Equipment.objects.create(
+            equipment_identifier='HOURS110020', equipment_type=equipment_type, equipment_model=equipment_model,
+            status=status, owner_company=company, operating_company=company,
+            factory_number='0020', garage_number='265',
+        )
+
+    def setUp(self):
+        self.client.force_login(self.user)
+
+    def test_work_type_seed_contains_requested_values(self):
+        self.assertEqual(
+            list(WorkType.objects.order_by('id').values_list('code', 'name')),
+            [
+                ('ТО', 'Техническое обслуживание'),
+                ('ТР', 'Текущий ремонт'),
+                ('Диаг', 'Диагностика'),
+                ('КР', 'Капитальный ремонт'),
+            ],
+        )
+
+    def test_register_and_display_latest_operating_hours(self):
+        measured_at = timezone.localtime().replace(second=0, microsecond=0)
+        response = self.client.post(
+            reverse('maintenance:operating_hours_create', args=[self.equipment.pk]),
+            {
+                'measured_at': measured_at.strftime('%Y-%m-%dT%H:%M'),
+                'operating_hours': '4230.5',
+                'note': 'Показание на начало смены',
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        reading = EquipmentOperatingHours.objects.get(equipment=self.equipment)
+        self.assertEqual(str(reading.operating_hours), '4230.5')
+        self.assertEqual(reading.updated_by, self.user)
+        card = self.client.get(reverse('directories:detail', args=['equipment', self.equipment.pk]))
+        self.assertContains(card, '4230,5 м/ч')
+        self.assertContains(card, 'Показание на начало смены')
+
+    def test_operating_hours_cannot_decrease(self):
+        first_at = timezone.localtime().replace(second=0, microsecond=0)
+        EquipmentOperatingHours.objects.create(
+            equipment=self.equipment,
+            measured_at=first_at,
+            operating_hours='1000.0',
+        )
+        response = self.client.post(
+            reverse('maintenance:operating_hours_create', args=[self.equipment.pk]),
+            {
+                'measured_at': (first_at + timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M'),
+                'operating_hours': '999.9',
+                'note': '',
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'не может быть меньше предыдущего')
+        self.assertEqual(EquipmentOperatingHours.objects.count(), 1)
+
+    def test_user_without_permission_cannot_add_reading(self):
+        outsider = get_user_model().objects.create_user('hours-outsider')
+        self.client.force_login(outsider)
+        self.assertEqual(
+            self.client.get(reverse('maintenance:operating_hours_create', args=[self.equipment.pk])).status_code,
+            403,
+        )
